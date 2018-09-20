@@ -386,6 +386,7 @@ class Ui_MainWindow(object):
         QtGui.QGuiApplication.processEvents()
 
 
+
     def one_measure(self):
         self.buttonMereni.setEnabled(False)
         self.buttonMereniDynamicke.setEnabled(False)
