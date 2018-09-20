@@ -315,15 +315,15 @@ class Ui_MainWindow(object):
                     clipx_message = ws.recv()
 
                     sensor1_values[mereni] = json.loads(clipx_message)
-                self.text_hodnoty1.append(str(sensor1_values[mereni]["params"]["value"]))
+                self.text_hodnoty1.append("{:.4E}".format(Decimal(sensor1_values[mereni]["params"]["value"])))
                 QtGui.QGuiApplication.processEvents()
                 measured_values[mereni] = sensor1_values[mereni]["params"]["value"]
             ws.close()
             print("Stop mereni 1:" + str(datetime.datetime.now()))
             dyn_prumer1 = np.append(dyn_prumer1, measured_values.mean())
             dyn_smodch1 = np.append(dyn_smodch1, measured_values.std())
-            self.prumer1.setText(str(measured_values.mean()))
-            self.smodch1.setText(str(measured_values.std()))
+            self.prumer1.setText("{:.4E}".format(Decimal(measured_values.mean())))
+            self.smodch1.setText("{:.4E}".format(Decimal(measured_values.std())))
             QtGui.QGuiApplication.processEvents()
 
             sensor2_values = [None] * 10
@@ -344,7 +344,7 @@ class Ui_MainWindow(object):
                     sensor2_values[mereni] = json.loads(clipx_message)
 
                 # print(sensor1_values[mereni]["params"]["value"])
-                self.text_hodnoty2.append(str(sensor2_values[mereni]["params"]["value"]))
+                self.text_hodnoty2.append("{:.4E}".format(Decimal(sensor2_values[mereni]["params"]["value"])))
                 QtGui.QGuiApplication.processEvents()
                 measured2_values[mereni] = sensor2_values[mereni]["params"]["value"]
 
@@ -352,16 +352,17 @@ class Ui_MainWindow(object):
             print("Stop mereni 2:" + str(datetime.datetime.now()))
             dyn_prumer2 = np.append(dyn_prumer2, measured2_values.mean())
             dyn_smodch2 = np.append(dyn_smodch2, measured2_values.std())
-            self.prumer2.setText(str(measured2_values.mean()))
-            self.smodch2.setText(str(measured2_values.std()))
+            self.prumer2.setText("{:.4E}".format(Decimal(measured2_values.mean())))
+            self.smodch2.setText("{:.4E}".format(Decimal(measured2_values.std())))
 
             dyn_value = np.append(dyn_value, measured_values.mean() - measured2_values.mean())
-            self.text_dynhodnoty.append(str(dyn_value[-1]))
+            self.text_dynhodnoty.append("{:.4E}".format(Decimal(dyn_value[-1])))
             self.rozdil.setText("{:.4E}".format(Decimal(dyn_value[measurement])))
             if len(dyn_value) > 1:
                 try:
                     self.graphicsView.plot(dyn_value, pen=pq.mkPen('b', width=3,
                                                                          style=QtCore.Qt.SolidLine, color=(200, 200, 255)))
+                    self.graphicsView.getPlotItem().showGrid(x=True, y=True, alpha=1)
                     QtGui.QGuiApplication.processEvents()
                 except Exception as ex:
                     print(ex)
@@ -427,8 +428,8 @@ class Ui_MainWindow(object):
             measured_values[mereni] = sensor1_values[mereni]["params"]["value"]
         ws.close()
 
-        self.prumer1.setText(str(measured_values.mean()))
-        self.smodch1.setText(str(measured_values.std()))
+        self.prumer1.setText("{:.4E}".format(Decimal(measured_values.mean())))
+        self.smodch1.setText("{:.4E}".format(Decimal(measured_values.std())))
         QtGui.QGuiApplication.processEvents()
         sensor2_values = [None] * 10
         measured2_values = np.zeros((10, 1))
@@ -448,14 +449,14 @@ class Ui_MainWindow(object):
                 sensor2_values[mereni] = json.loads(clipx_message)
 
             # print(sensor1_values[mereni]["params"]["value"])
-            self.text_hodnoty2.append(str(sensor2_values[mereni]["params"]["value"]))
+            self.text_hodnoty2.append("{:.4E}".format(Decimal(sensor2_values[mereni]["params"]["value"])))
             QtGui.QGuiApplication.processEvents()
             measured2_values[mereni] = sensor2_values[mereni]["params"]["value"]
 
         ws2.close()
 
-        self.prumer2.setText(str(measured2_values.mean()))
-        self.smodch2.setText(str(measured2_values.std()))
+        self.prumer2.setText("{:.4E}".format(Decimal(measured2_values.mean())))
+        self.smodch2.setText("{:.4E}".format(Decimal(measured2_values.std())))
         rozdil = measured_values.mean() - measured2_values.mean()
         self.rozdil.setText("{:.4E}".format(Decimal(rozdil)))
         self.buttonMereni.setEnabled(True)
