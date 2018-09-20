@@ -5,7 +5,6 @@
 # Created by: PyQt5 UI code generator 5.11.2
 #
 # WARNING! All changes made in this file will be lost!
-from decimal import Decimal
 import asyncio
 import websockets
 import websocket
@@ -18,7 +17,7 @@ from threading import Thread
 
 from websocket import create_connection
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QThread, pyqtSignal
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -209,78 +208,77 @@ class Ui_MainWindow(object):
     def on_click(self):
         print('PyQt5 button click')
         print("running..")
+        measured_data = np.zeros(10,1)
+        t = threading.Thread(name="staticThread", target=staticThread)
+        t.start()
+        print(measured_data)
+        # json_trigger_command = """
+        #             {"id":1,"method":"call","params":{"path":"measval/cmdTriggerCapturedValue1","args":[]}}
+        #             """
+        # json_get_command = """
+        #             {"method":"fetch_all","params":{"path":"measval/adcBinVal32"}}
+        #             """
+        # json_trigger = json.loads(json_trigger_command)
+        # json_get = json.loads(json_get_command)
+        # expected_message = """"path":"measval/values/capturedValue1"""""
+        #
+        # sensor1_values = [None] * 10
+        # measured_values = np.zeros((10, 1))
+        # ws = create_connection("ws://10.0.0.46:8081")
+        # self.text_hodnoty1.setText("")
+        # for mereni in range(10):
+        #     ws.send(json.dumps(json_trigger))
+        #     result = ws.recv()
+        #     time.sleep(.1)
+        #     print(mereni)
+        #     # TODO check result
+        #     ws.send(json.dumps(json_get))
+        #     clipx_message = ""
+        #     while not expected_message in clipx_message:
+        #         clipx_message = ws.recv()
+        #
+        #         sensor1_values[mereni] = json.loads(clipx_message)
+        #
+        #     # print(sensor1_values[mereni]["params"]["value"])
+        #     self.text_hodnoty1.append(str(sensor1_values[mereni]["params"]["value"]))
+        #     measured_values[mereni] = sensor1_values[mereni]["params"]["value"]
+        #
+        # ws.close()
+        # print("done")
+        # print("thread finished...exiting")
+        # print(sensor1_values)
+        # print(measured_values)
+        # self.prumer1.setText(str(measured_values.mean()))
+        # self.smodch1.setText(str(measured_values.std()))
+    def myThread(self):
+        print("running..")
         json_trigger_command = """
-                    {"id":1,"method":"call","params":{"path":"measval/cmdTriggerCapturedValue1","args":[]}}
-                    """
+                        {"id":1,"method":"call","params":{"path":"measval/cmdTriggerCapturedValue1","args":[]}}
+                        """
         json_get_command = """
-                    {"method":"fetch_all","params":{"path":"measval/adcBinVal32"}}
-                    """
+                        {"method":"fetch_all","params":{"path":"measval/adcBinVal32"}}
+                        """
         json_trigger = json.loads(json_trigger_command)
         json_get = json.loads(json_get_command)
         expected_message = """"path":"measval/values/capturedValue1"""""
 
         sensor1_values = [None] * 10
-        measured_values = np.zeros((10, 1))
+        measured1_values = [None] * 10
         ws = create_connection("ws://10.0.0.46:8081")
-        self.text_hodnoty1.setText("")
+
         for mereni in range(10):
             ws.send(json.dumps(json_trigger))
             result = ws.recv()
-            time.sleep(.1)
-            print(mereni)
+            time.sleep(.2)
             # TODO check result
             ws.send(json.dumps(json_get))
             clipx_message = ""
             while not expected_message in clipx_message:
                 clipx_message = ws.recv()
-
                 sensor1_values[mereni] = json.loads(clipx_message)
-
-            # print(sensor1_values[mereni]["params"]["value"])
-            self.text_hodnoty1.append(str(sensor1_values[mereni]["params"]["value"]))
-            QtGui.QGuiApplication.processEvents()
-            measured_values[mereni] = sensor1_values[mereni]["params"]["value"]
-
+            measured1_values[mereni] = sensor1_values[mereni]["params"]["value"]
         ws.close()
-        print("done")
-        print("thread finished...exiting")
-        print(sensor1_values)
-        print(measured_values)
-        self.prumer1.setText(str(measured_values.mean()))
-        self.smodch1.setText(str(measured_values.std()))
-        QtGui.QGuiApplication.processEvents()
-        sensor2_values = [None] * 10
-        measured2_values = np.zeros((10, 1))
-        ws2 = create_connection("ws://10.0.0.46:8081")
-        self.text_hodnoty2.setText("")
-        for mereni in range(10):
-            ws2.send(json.dumps(json_trigger))
-            result = ws2.recv()
-            time.sleep(.1)
-            print(mereni)
-            # TODO check result
-            ws2.send(json.dumps(json_get))
-            clipx_message = ""
-            while not expected_message in clipx_message:
-                clipx_message = ws2.recv()
-
-                sensor2_values[mereni] = json.loads(clipx_message)
-
-            # print(sensor1_values[mereni]["params"]["value"])
-            self.text_hodnoty2.append(str(sensor2_values[mereni]["params"]["value"]))
-            QtGui.QGuiApplication.processEvents()
-            measured2_values[mereni] = sensor2_values[mereni]["params"]["value"]
-
-        ws2.close()
-        print("done")
-        print("thread finished...exiting")
-        print(sensor2_values)
-        print(measured2_values)
-        self.prumer2.setText(str(measured2_values.mean()))
-        self.smodch2.setText(str(measured2_values.std()))
-        rozdil = measured_values.mean() - measured2_values.mean()
-        self.rozdil.setText("{:.4E}".format(Decimal(rozdil)))
-
+        print("ahoj")
 
 
 
@@ -299,6 +297,37 @@ class Ui_MainWindow(object):
         self.label_9.setText(_translate("MainWindow", "Dynamické měření"))
 
 
+def staticThread():
+    print("running..")
+    json_trigger_command = """
+                {"id":1,"method":"call","params":{"path":"measval/cmdTriggerCapturedValue1","args":[]}}
+                """
+    json_get_command = """
+                {"method":"fetch_all","params":{"path":"measval/adcBinVal32"}}
+                """
+    json_trigger = json.loads(json_trigger_command)
+    json_get = json.loads(json_get_command)
+    expected_message = """"path":"measval/values/capturedValue1"""""
+
+    sensor1_values = [None] * 10
+    measured1_values = [None] * 10
+    ws = create_connection("ws://10.0.0.46:8081")
+
+    for mereni in range(10):
+        ws.send(json.dumps(json_trigger))
+        result = ws.recv()
+        time.sleep(.2)
+        # TODO check result
+        ws.send(json.dumps(json_get))
+        clipx_message = ""
+        while not expected_message in clipx_message:
+            clipx_message = ws.recv()
+            sensor1_values[mereni] = json.loads(clipx_message)
+        measured1_values[mereni] = sensor1_values[mereni]["params"]["value"]
+    ws.close()
+    print("ahoj")
+
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
@@ -307,6 +336,8 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
+
+
 
 
 def communicate():
@@ -338,3 +369,41 @@ def communicate():
 
     ws.close()
     print("done")
+
+class MeasureThread(QThread):
+    signal = pyqtSignal("PyQt_PyObject")
+
+    def __init__(self):
+        QThread.__init__(self)
+
+    def run(self):
+        print("running..")
+        json_trigger_command = """
+                        {"id":1,"method":"call","params":{"path":"measval/cmdTriggerCapturedValue1","args":[]}}
+                        """
+        json_get_command = """
+                        {"method":"fetch_all","params":{"path":"measval/adcBinVal32"}}
+                        """
+        json_trigger = json.loads(json_trigger_command)
+        json_get = json.loads(json_get_command)
+        expected_message = """"path":"measval/values/capturedValue1"""""
+
+        sensor1_values = [None] * 10
+        measured1_values = [None] * 10
+        ws = create_connection("ws://10.0.0.46:8081")
+
+        for mereni in range(10):
+            ws.send(json.dumps(json_trigger))
+            result = ws.recv()
+            time.sleep(.2)
+            # TODO check result
+            ws.send(json.dumps(json_get))
+            clipx_message = ""
+            while not expected_message in clipx_message:
+                clipx_message = ws.recv()
+                sensor1_values[mereni] = json.loads(clipx_message)
+            measured1_values[mereni] = sensor1_values[mereni]["params"]["value"]
+
+        ws.close()
+        self.signal.emit(mereni)
+
