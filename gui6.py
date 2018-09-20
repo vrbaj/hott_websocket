@@ -288,8 +288,6 @@ class Ui_MainWindow(object):
             self.prumer2.setText("0")
             self.smodch1.setText("0")
             self.smodch2.setText("0")
-
-            print("jedu")
             json_trigger_command = """
                                 {"id":1,"method":"call","params":{"path":"measval/cmdTriggerCapturedValue1","args":[]}}
                                 """
@@ -301,8 +299,6 @@ class Ui_MainWindow(object):
             expected_message = """"path":"measval/values/capturedValue1"""""
             sensor1_values = [None] * 10
             measured_values = np.zeros((10,))
-
-
             try:
                 ws = create_connection("ws://10.0.0.46:8081")
             except Exception as ex:
@@ -381,20 +377,13 @@ class Ui_MainWindow(object):
         self.buttonMereni.setEnabled(True)
         self.buttonMereniDynamicke.setEnabled(True)
         QtGui.QGuiApplication.processEvents()
-        output = np.asarray([dyn_value, dyn_smodch1,dyn_smodch2,dyn_prumer1,dyn_prumer2])
-        print(output)
-        print(output.transpose())
-        print("jsem tu")
-        print(dyn_prumer2)
-        print(dyn_prumer1)
-        print(dyn_smodch2)
-        print(dyn_smodch1)
-        output = np.asarray([dyn_value,dyn_value,dyn_value,dyn_value,dyn_value])
+        output = np.asarray([dyn_value, dyn_value, dyn_value, dyn_value, dyn_value])
         try:
             np.savetxt(self.lineEdit.text(), output.transpose(), delimiter=",", header="diff,smodch1,smodch2,prumer1,prumer2")
         except Exception as ex:
             print(ex)
-
+        self.lineEdit.setText(datetime.datetime.now().strftime("Data_" + "%Y-%m-%d_%H%M%S" + ".csv"))
+        QtGui.QGuiApplication.processEvents()
 
 
     def one_measure(self):
@@ -436,10 +425,7 @@ class Ui_MainWindow(object):
             QtGui.QGuiApplication.processEvents()
             measured_values[mereni] = sensor1_values[mereni]["params"]["value"]
         ws.close()
-        print("done")
-        print("thread finished...exiting")
-        print(sensor1_values)
-        print(measured_values)
+
         self.prumer1.setText(str(measured_values.mean()))
         self.smodch1.setText(str(measured_values.std()))
         QtGui.QGuiApplication.processEvents()
