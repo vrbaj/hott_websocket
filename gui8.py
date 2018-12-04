@@ -25,6 +25,8 @@ from PyQt5.QtCore import QThread
 import pyqtgraph as pq
 
 from pyqtgraph import PlotWidget
+import getMeasValues
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -370,117 +372,23 @@ class Ui_MainWindow(object):
         dyn_smodch2 = np.array([])
 
         self.text_dynhodnoty.setText("")
+
+        cidlo1 = getMeasValues.MeasureThread("1")
+        cidlo1.signal.connect(self.getSensor1Data)
+        cidlo2 = getMeasValues.MeasureThread("2")
+        cidlo2.signal.connect(self.getSensor2Data)
+
+        cidlo1.start()
+        cidlo2.start()
         QtGui.QGuiApplication.processEvents()
 
-        for measurement in range(total_measurements):
-            self.text_hodnoty1.setText("")
-            self.text_hodnoty2.setText("")
-            self.rozdil.setText("0")
-            self.prumer1.setText("0")
-            self.prumer2.setText("0")
-            self.smodch1.setText("0")
-            self.smodch2.setText("0")
-            json_trigger_command = """
-                                   {"id":1,"method":"call","params":{"path":"measval/cmdTriggerCapturedValue1","args":[]}}
-                                   """
-            json_get_command = """
-                                   {"method":"fetch_all","params":{"path":"measval/values/capturedValue1"}}
-                                   """
-            json_trigger = json.loads(json_trigger_command)
-            json_get = json.loads(json_get_command)
-            expected_message = """"path":"measval/values/capturedValue1"""""
-            sensor1_values = [None] * 10
-            measured_values = np.zeros((10,))
-            try:
-                ws = create_connection("ws://10.0.0.4:8081")
-            except Exception as ex:
-                print(ex)
-            print("Start mereni 1:" + str(datetime.datetime.now()))
-            for mereni in range(10):
-                ws.send(json.dumps(json_trigger))
-                result = ws.recv()
-                time.sleep(.1)
-                # TODO check result
-                ws.send(json.dumps(json_get))
-                clipx_message = ""
-                while expected_message not in clipx_message:
-                    try:
-                        clipx_message = ws.recv()
-                        print(clipx_message)
-                    except Exception as ex:
-                        print(ex)
-                    sensor1_values[mereni] = json.loads(clipx_message)
-                self.text_hodnoty1.append("{:.4E}".format(Decimal(sensor1_values[mereni]["params"]["value"])))
-                QtGui.QGuiApplication.processEvents()
-                measured_values[mereni] = sensor1_values[mereni]["params"]["value"]
-            ws.close()
-            print("Stop mereni 1:" + str(datetime.datetime.now()))
-            dyn_prumer1 = np.append(dyn_prumer1, measured_values.mean())
-            dyn_smodch1 = np.append(dyn_smodch1, measured_values.std())
-            self.prumer1.setText("{:.4E}".format(Decimal(measured_values.mean())))
-            self.smodch1.setText("{:.4E}".format(Decimal(measured_values.std())))
-            QtGui.QGuiApplication.processEvents()
+    def getSensor1Data(self, result):
+        print(result)
+        print("ACK1")
 
-            sensor2_values = [None] * 10
-            measured2_values = np.zeros((10, 1))
-            ws2 = create_connection("ws://10.0.0.4:8081")
-            self.text_hodnoty2.setText("")
-            print("Start mereni 2:" + str(datetime.datetime.now()))
-            for mereni in range(10):
-                ws2.send(json.dumps(json_trigger))
-                result = ws2.recv()
-                time.sleep(.1)
-                # TODO check result
-                ws2.send(json.dumps(json_get))
-                clipx_message = ""
-                while not expected_message in clipx_message:
-                    clipx_message = ws2.recv()
-
-                    sensor2_values[mereni] = json.loads(clipx_message)
-
-                # print(sensor1_values[mereni]["params"]["value"])
-                self.text_hodnoty2.append("{:.4E}".format(Decimal(sensor2_values[mereni]["params"]["value"])))
-                QtGui.QGuiApplication.processEvents()
-                measured2_values[mereni] = sensor2_values[mereni]["params"]["value"]
-
-            ws2.close()
-            print("Stop mereni 2:" + str(datetime.datetime.now()))
-            dyn_prumer2 = np.append(dyn_prumer2, measured2_values.mean())
-            dyn_smodch2 = np.append(dyn_smodch2, measured2_values.std())
-            self.prumer2.setText("{:.4E}".format(Decimal(measured2_values.mean())))
-            self.smodch2.setText("{:.4E}".format(Decimal(measured2_values.std())))
-
-            dyn_value = np.append(dyn_value, measured_values.mean() - measured2_values.mean())
-            self.text_dynhodnoty.append("{:.4E}".format(Decimal(dyn_value[-1])))
-            self.rozdil.setText("{:.4E}".format(Decimal(dyn_value[measurement])))
-            if len(dyn_value) > 1:
-                try:
-                    self.graphicsView.plot(dyn_value, pen=pq.mkPen('b', width=3,
-                                                                   style=QtCore.Qt.SolidLine, color=(200, 200, 255)))
-                    self.graphicsView.getPlotItem().showGrid(x=True, y=True, alpha=1)
-                    QtGui.QGuiApplication.processEvents()
-                except Exception as ex:
-                    print(ex)
-            start_pause = (datetime.datetime.now())
-
-            time_difference = start_pause - start_pause
-            time_difference_seconds = time_difference.total_seconds()
-            while time_difference_seconds < period_time:
-                time.sleep(0.05)
-                QtGui.QGuiApplication.processEvents()
-                time_difference = datetime.datetime.now() - start_pause
-                time_difference_seconds = time_difference.total_seconds()
-        self.buttonMereni.setEnabled(True)
-        self.buttonMereniDynamicke.setEnabled(True)
-        QtGui.QGuiApplication.processEvents()
-        output = np.asarray([dyn_value, dyn_value, dyn_value, dyn_value, dyn_value])
-        try:
-            np.savetxt(self.lineEdit.text(), output.transpose(), delimiter=",",
-                       header="diff,smodch1,smodch2,prumer1,prumer2")
-        except Exception as ex:
-            print(ex)
-        self.lineEdit.setText(datetime.datetime.now().strftime("Data_" + "%Y-%m-%d_%H%M%S" + ".csv"))
-        QtGui.QGuiApplication.processEvents()
+    def getSensor2Data(self, result):
+        print(result)
+        print("ACK2")
 
     def one_measure(self):
         self.buttonMereni.setEnabled(False)
