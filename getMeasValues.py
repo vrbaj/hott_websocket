@@ -45,7 +45,6 @@ class MeasureThread(QThread):
             while expected_message not in clipx_message:
                 clipx_message = ws.recv()
                 print(clipx_message + "  Data z:" + self.git_url)
-                sensor1_values[mereni] = json.loads(clipx_message)
             time.sleep(0.1)
             measured_values[mereni] = sensor1_values[mereni]["params"]["value"]
             print("EMIT PRE + ", measured_values)
