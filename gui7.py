@@ -28,6 +28,9 @@ from pyqtgraph import PlotWidget
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        self.int_validator =QtGui.QIntValidator()
+        self.float_validator = QtGui.QDoubleValidator()
+        self.koeficienty = {'uzavreny': [0.000615, 0.001056], 'otevreny': [0.000895, 0.000287]}
         pq.setConfigOption('background', 'y')
         pq.setConfigOption('foreground', 'k')
         MainWindow.setObjectName("MainWindow")
@@ -211,9 +214,12 @@ class Ui_MainWindow(object):
         self.lineEdit_interval.setGeometry(QtCore.QRect(90, 60, 151, 20))
         self.lineEdit_interval.setInputMethodHints(QtCore.Qt.ImhDigitsOnly)
         self.lineEdit_interval.setObjectName("lineEdit_interval")
+        self.lineEdit_interval.setValidator(self.int_validator)
         self.lineEdit_pocet_2 = QtWidgets.QLineEdit(self.groupBox_3)
         self.lineEdit_pocet_2.setGeometry(QtCore.QRect(90, 40, 151, 20))
         self.lineEdit_pocet_2.setInputMethodHints(QtCore.Qt.ImhDigitsOnly)
+        self.lineEdit_pocet_2.setValidator(self.int_validator)
+
         self.lineEdit_pocet_2.setObjectName("lineEdit_pocet_2")
         self.buttonMereniDynamicke = QtWidgets.QPushButton(self.groupBox_3)
         self.buttonMereniDynamicke.setGeometry(QtCore.QRect(20, 120, 221, 21))
@@ -237,35 +243,80 @@ class Ui_MainWindow(object):
         self.label_13.setGeometry(QtCore.QRect(20, 150, 47, 13))
         self.label_13.setObjectName("label_13")
         self.groupBox_4 = QtWidgets.QGroupBox(self.centralwidget)
-        self.groupBox_4.setGeometry(QtCore.QRect(490, 660, 411, 51))
+        self.groupBox_4.setGeometry(QtCore.QRect(340, 660, 320, 51))
         self.groupBox_4.setObjectName("groupBox_4")
         self.pushTare2 = QtWidgets.QPushButton(self.groupBox_4)
-        self.pushTare2.setGeometry(QtCore.QRect(10, 20, 91, 23))
+        self.pushTare2.setGeometry(QtCore.QRect(10, 20, 70, 23))
         self.pushTare2.setObjectName("pushTare2")
         self.pushTareZrusit2 = QtWidgets.QPushButton(self.groupBox_4)
-        self.pushTareZrusit2.setGeometry(QtCore.QRect(110, 20, 91, 23))
+        self.pushTareZrusit2.setGeometry(QtCore.QRect(80, 20, 90, 23))
         self.pushTareZrusit2.setObjectName("pushTareZrusit2")
         self.pushNula2 = QtWidgets.QPushButton(self.groupBox_4)
-        self.pushNula2.setGeometry(QtCore.QRect(210, 20, 91, 23))
+        self.pushNula2.setGeometry(QtCore.QRect(170, 20, 70, 23))
         self.pushNula2.setObjectName("pushNula2")
         self.pushNulaZrusit2 = QtWidgets.QPushButton(self.groupBox_4)
-        self.pushNulaZrusit2.setGeometry(QtCore.QRect(310, 20, 91, 23))
+        self.pushNulaZrusit2.setGeometry(QtCore.QRect(240, 20, 70, 23))
         self.pushNulaZrusit2.setObjectName("pushNulaZrusit2")
         self.groupBox_5 = QtWidgets.QGroupBox(self.centralwidget)
-        self.groupBox_5.setGeometry(QtCore.QRect(10, 660, 411, 51))
+        self.groupBox_5.setGeometry(QtCore.QRect(10, 660, 320, 51))
         self.groupBox_5.setObjectName("groupBox_5")
         self.pushTare2_2 = QtWidgets.QPushButton(self.groupBox_5)
-        self.pushTare2_2.setGeometry(QtCore.QRect(10, 20, 91, 23))
+        self.pushTare2_2.setGeometry(QtCore.QRect(10, 20, 70, 23))
         self.pushTare2_2.setObjectName("pushTare2_2")
         self.pushTareZrusit2_2 = QtWidgets.QPushButton(self.groupBox_5)
-        self.pushTareZrusit2_2.setGeometry(QtCore.QRect(110, 20, 91, 23))
+        self.pushTareZrusit2_2.setGeometry(QtCore.QRect(80, 20, 90, 23))
         self.pushTareZrusit2_2.setObjectName("pushTareZrusit2_2")
         self.pushNula1 = QtWidgets.QPushButton(self.groupBox_5)
-        self.pushNula1.setGeometry(QtCore.QRect(210, 20, 91, 23))
+        self.pushNula1.setGeometry(QtCore.QRect(170, 20, 70, 23))
         self.pushNula1.setObjectName("pushNula1")
         self.pushNulaZrusit1 = QtWidgets.QPushButton(self.groupBox_5)
-        self.pushNulaZrusit1.setGeometry(QtCore.QRect(310, 20, 91, 23))
+        self.pushNulaZrusit1.setGeometry(QtCore.QRect(240, 20, 70, 23))
         self.pushNulaZrusit1.setObjectName("pushNulaZrusit1")
+        # parametry
+        self.label_20 = QtWidgets.QLabel(self.centralwidget)
+        self.label_20.setGeometry(QtCore.QRect(680, 660, 55, 13))
+        self.label_20.setObjectName("label_20")
+
+        self.label_21 = QtWidgets.QLabel(self.centralwidget)
+        self.label_21.setGeometry(QtCore.QRect(750, 675, 20, 13))
+        self.label_21.setObjectName("label_21")
+        self.label_22 = QtWidgets.QLabel(self.centralwidget)
+        self.label_22.setGeometry(QtCore.QRect(750, 692, 20, 13))
+        self.label_22.setObjectName("label_22")
+
+        self.groupBox_6 = QtWidgets.QGroupBox(self.centralwidget)
+        self.groupBox_6.setGeometry(QtCore.QRect(670, 666, 240, 45))
+        self.groupBox_6.setObjectName("groupBox_6")
+
+        self.lineEdit_koef1 = QtWidgets.QLineEdit(self.groupBox_6)
+        self.lineEdit_koef1.setGeometry(QtCore.QRect(5, 7, 70, 18))
+        self.lineEdit_koef1.setInputMethodHints(QtCore.Qt.ImhDigitsOnly)
+        self.lineEdit_koef1.setObjectName("lineEdit_koef1")
+        self.lineEdit_koef1.setText(str(self.koeficienty["uzavreny"][0]))
+        self.lineEdit_koef1.setValidator(self.float_validator)
+        self.lineEdit_koef1.textChanged.connect(self.editKoef1)
+
+        self.lineEdit_koef2 = QtWidgets.QLineEdit(self.groupBox_6)
+        self.lineEdit_koef2.setGeometry(QtCore.QRect(5, 23, 70, 18))
+        self.lineEdit_koef2.setInputMethodHints(QtCore.Qt.ImhDigitsOnly)
+        self.lineEdit_koef2.setObjectName("lineEdit_koef2")
+        self.lineEdit_koef2.setText(str(self.koeficienty["uzavreny"][1]))
+        self.lineEdit_koef2.setValidator(self.float_validator)
+        self.lineEdit_koef2.textChanged.connect(self.editKoef2)
+
+        self.radio1 = QtWidgets.QRadioButton("Uzavřený", self.groupBox_6)
+        self.radio1.setGeometry(QtCore.QRect(100, 3, 80, 25))
+        self.radio1.setChecked(True)
+        self.radio1.toggled.connect(lambda: self.btnstate(self.radio1))
+        self.radio2 = QtWidgets.QRadioButton("Otevřený", self.groupBox_6)
+        self.radio2.setGeometry(QtCore.QRect(100, 20, 80, 25))
+        self.radio2.toggled.connect(lambda: self.btnstate(self.radio2))
+
+        self.buttonRst = QtWidgets.QPushButton(self.groupBox_6)
+        self.buttonRst.setGeometry(QtCore.QRect(180, 5, 50, 21))
+        self.buttonRst.setObjectName("buttonRst")
+        self.buttonRst.clicked.connect(self.resetKoef)
+
 
         self.pushNula1.clicked.connect(self.nula1)
         self.pushNula2.clicked.connect(self.nula2)
@@ -281,6 +332,9 @@ class Ui_MainWindow(object):
         self.text_hodnoty2.raise_()
         self.label.raise_()
         self.label_2.raise_()
+        self.label_20.raise_()
+        self.label_21.raise_()
+        self.label_22.raise_()
         self.label_3.raise_()
         self.label_4.raise_()
         self.label_5.raise_()
@@ -298,9 +352,15 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-
+        self.radio2.click()
+        self.radio1.click()
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def resetKoef(self):
+        self.koeficienty = {'uzavreny': [0.000615, 0.001056], 'otevreny': [0.000895, 0.000287]}
+        self.radio2.click()
+        self.radio1.click()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -308,11 +368,15 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Statické měření"))
         self.label_2.setText(_translate("MainWindow", "Čidlo 1"))
         self.label_3.setText(_translate("MainWindow", "Čidlo 2"))
+        self.label_20.setText(_translate("MainWindow", "Parametry"))
+        self.label_21.setText(_translate("MainWindow", "č.1"))
+        self.label_22.setText(_translate("MainWindow", "č.2"))
         self.label_4.setText(_translate("MainWindow", "Průměrná hodnota"))
         self.label_5.setText(_translate("MainWindow", "Směrodatná odchylka"))
         self.label_6.setText(_translate("MainWindow", "Průměrná hodnota"))
         self.label_7.setText(_translate("MainWindow", "Směrodatná odchylka"))
         self.buttonMereni.setText(_translate("MainWindow", "Měření"))
+        self.buttonRst.setText(_translate("MainWindow","Reset"))
         self.label_8.setText(_translate("MainWindow", "Rozdíl"))
         self.label_9.setText(_translate("MainWindow", "Dynamické měření"))
         self.label_10.setText(_translate("MainWindow", "Počet měření"))
@@ -331,15 +395,40 @@ class Ui_MainWindow(object):
         self.pushNula1.setText(_translate("MainWindow", "Vynulovat"))
         self.pushNulaZrusit1.setText(_translate("MainWindow", "Zrušit 0"))
 
+
+    def editKoef1(self):
+        if self.radio1.isChecked() == True:
+            self.koeficienty["uzavreny"][0] = float(self.lineEdit_koef1.text())
+        if self.radio2.isChecked() == True:
+            self.koeficienty["otevreny"][0] = float(self.lineEdit_koef1.text())
+
+    def editKoef2(self):
+        if self.radio1.isChecked() == True:
+            self.koeficienty["uzavreny"][1] = float(self.lineEdit_koef2.text())
+        if self.radio2.isChecked() == True:
+            self.koeficienty["otevreny"][1] = float(self.lineEdit_koef2.text())
+
+    def btnstate(self, b):
+        if b.text() == "Otevřený":
+            if b.isChecked() == True:
+                self.lineEdit_koef1.setText(str(self.koeficienty['otevreny'][0]))
+                self.lineEdit_koef2.setText(str(self.koeficienty['otevreny'][1]))
+
+        if b.text() == "Uzavřený":
+            if b.isChecked() == True:
+                self.lineEdit_koef1.setText(str(self.koeficienty['uzavreny'][0]))
+                self.lineEdit_koef2.setText(str(self.koeficienty['uzavreny'][1]))
+
+
     def nula1(self):
         # {"id":27,"method":"call","params":{"path":"measval/cmdSetZeroGros","args":[]}}
         self.send_command(1, "zero")
 
     def nula2(self):
-        self.send_command(1, "zero")
+        self.send_command(2, "zero")
 
     def tare2(self):
-        self.send_command(1, "tare")
+        self.send_command(2, "tare")
 
     def tare1(self):
         self.send_command(1, "tare")
@@ -348,13 +437,13 @@ class Ui_MainWindow(object):
         self.send_command(1, "clear_zero")
 
     def nula2_zrusit(self):
-        self.send_command(1, "clear_zero")
+        self.send_command(2, "clear_zero")
 
     def tare1_zrusit(self):
         self.send_command(1, "clear_tare")
 
     def tare2_zrusit(self):
-        self.send_command(1, "clear_tare")
+        self.send_command(2, "clear_tare")
 
     def multiple_measure(self):
         print("multiple")
