@@ -392,11 +392,11 @@ class Ui_MainWindow(object):
             sensor1_values = [None] * 10
             measured_values = np.zeros((10,))
             try:
-                ws = create_connection("ws://10.0.0.4:8081")
+                ws = create_connection("ws://169.254.178.232:8081")
             except Exception as ex:
                 print(ex)
             print("Start mereni 1:" + str(datetime.datetime.now()))
-            for mereni in range(10):
+            for mereni in range(1):
                 ws.send(json.dumps(json_trigger))
                 result = ws.recv()
                 time.sleep(.1)
@@ -423,10 +423,10 @@ class Ui_MainWindow(object):
 
             sensor2_values = [None] * 10
             measured2_values = np.zeros((10, 1))
-            ws2 = create_connection("ws://10.0.0.4:8081")
+            ws2 = create_connection("ws://169.254.178.218:8081")
             self.text_hodnoty2.setText("")
             print("Start mereni 2:" + str(datetime.datetime.now()))
-            for mereni in range(10):
+            for mereni in range(1):
                 ws2.send(json.dumps(json_trigger))
                 result = ws2.recv()
                 time.sleep(.1)
@@ -504,7 +504,7 @@ class Ui_MainWindow(object):
         sensor1_values = [None] * 10
         measured_values = np.zeros((10,))
 
-        ws = create_connection("ws://10.0.0.52:8081")
+        ws = create_connection("ws://169.254.178.232:8081")
 
         for mereni in range(10):
             ws.send(json.dumps(json_trigger))
@@ -527,7 +527,7 @@ class Ui_MainWindow(object):
         QtGui.QGuiApplication.processEvents()
         sensor2_values = [None] * 10
         measured2_values = np.zeros((10, 1))
-        ws2 = create_connection("ws://10.0.0.52:8081")
+        ws2 = create_connection("ws://169.254.178.218:8081")
         self.text_hodnoty2.setText("")
         for mereni in range(10):
             ws2.send(json.dumps(json_trigger))
@@ -559,9 +559,9 @@ class Ui_MainWindow(object):
 
     def send_command(self, device, command):
         if device == 1:
-            connection_string = "ws://10.0.0.52:8081"
+            connection_string = "ws://169.254.178.218:8081"
         else:
-            connection_string = "ws://10.0.0.46:8081"
+            connection_string = "ws://169.254.178.232:8081"
 
         if command == "tare":
             json_command = """
