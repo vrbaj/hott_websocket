@@ -660,6 +660,7 @@ class Ui_MainWindow(object):
         self.buttonMereniDynamicke.setEnabled(True)
 
     def one_measure(self):
+        critical_fail = False
         koeficienty = np.array([0, 0])
         if self.radio1.isChecked() == True:
             koeficienty[0] = self.koeficienty["uzavreny"][0]
@@ -752,6 +753,7 @@ class Ui_MainWindow(object):
         QtGui.QGuiApplication.processEvents()
 
     def send_command(self, device, command):
+        critical_fail = False
         if device == 1:
             connection_string = "ws://169.254.178.218:8081"
         else:
@@ -778,12 +780,13 @@ class Ui_MainWindow(object):
             ws = create_connection(connection_string)
         except Exception as ex:
             print(ex)
-
-        json_tare = json.loads(json_command)
-        ws.send(json.dumps(json_tare))
-        result = ws.recv()
-        print(result)
-        ws.close()
+            critical_fail = True
+        if not critical_fail:
+            json_tare = json.loads(json_command)
+            ws.send(json.dumps(json_tare))
+            result = ws.recv()
+            print(result)
+            ws.close()
 
 
 
